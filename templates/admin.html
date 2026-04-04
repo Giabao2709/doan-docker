@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - IT DOCKER</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Nunito', sans-serif; background-color: #f8fafc; }
+        .sidebar { background: #0f172a; min-height: 100vh; color: white; padding-top: 20px; }
+        .stat-card { border-radius: 15px; border: none; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .table-custom { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .table-custom thead { background-color: #f1f5f9; color: #475569; font-size: 0.85rem; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <div class="col-md-2 sidebar d-none d-md-block">
+                <div class="text-center mb-5 mt-3">
+                    <i class="fa-solid fa-gear fs-1 text-primary mb-2"></i>
+                    <h5 class="fw-bold">ADMIN PANEL</h5>
+                    <span class="badge bg-success">Online</span>
+                </div>
+                <div class="px-3">
+                    <a href="#" class="btn btn-primary w-100 text-start border-0 py-2 mb-2"><i class="fa-solid fa-chart-pie w-25 text-center"></i> Thống kê</a>
+                    <a href="/logout" class="btn btn-outline-light w-100 text-start border-0 py-2 mt-5"><i class="fa-solid fa-sign-out-alt w-25 text-center"></i> Đăng xuất</a>
+                </div>
+            </div>
+
+            <div class="col-md-10 p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-bold text-dark m-0">Tổng quan hệ thống</h2>
+                    <div class="bg-white px-4 py-2 rounded-pill shadow-sm fw-bold text-primary">
+                        <i class="fa-regular fa-calendar"></i> Hôm nay
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4">
+                        <div class="card stat-card h-100 p-3 border-start border-primary border-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted fw-bold mb-1">TỔNG ĐƠN HÀNG</p>
+                                    <h2 class="fw-bold m-0">{{ orders|length }} <span class="fs-6 text-muted">đơn</span></h2>
+                                </div>
+                                <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="fa-solid fa-box-open"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card stat-card h-100 p-3 border-start border-success border-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted fw-bold mb-1">TỔNG DOANH THU</p>
+                                    <h2 class="fw-bold m-0 text-success">{{"{:,.0f}".format(total_rev)}}₫</h2>
+                                </div>
+                                <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="fa-solid fa-money-bill-wave"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card stat-card h-100 p-3 border-start border-warning border-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted fw-bold mb-1">SỐ LƯỢNG MÁY BÁN RA</p>
+                                    <h2 class="fw-bold m-0">{{ total_items }} <span class="fs-6 text-muted">máy</span></h2>
+                                </div>
+                                <div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="fa-solid fa-laptop"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-primary"></i> Đơn hàng mới nhất</h4>
+                <div class="table-responsive table-custom">
+                    <table class="table table-hover align-middle m-0">
+                        <thead>
+                            <tr>
+                                <th class="py-3 ps-4">Khách hàng</th>
+                                <th class="py-3">Liên hệ</th>
+                                <th class="py-3">Thời gian đặt</th>
+                                <th class="py-3 w-25">Sản phẩm chi tiết</th>
+                                <th class="py-3">Thành tiền</th>
+                                <th class="py-3 text-center">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px; font-weight: bold;">
+                                            {{ order.customer[0]|upper }}
+                                        </div>
+                                        <span class="fw-bold text-dark">{{ order.customer }}</span>
+                                    </div>
+                                </td>
+                                <td><i class="fa-solid fa-phone text-muted small"></i> {{ order.phone }}</td>
+                                <td><i class="fa-regular fa-clock text-muted small"></i> {{ order.time }}</td>
+                                <td>
+                                    <ul class="list-unstyled m-0 small">
+                                    {% for item in order['items'] %}
+                                        <li>• {{ item.name }} <span class="text-danger fw-bold">({{"{:,.0f}".format(item.price)}}₫)</span></li>
+                                    {% endfor %}
+                                    </ul>
+                                </td>
+                                <td class="text-danger fw-bold">{{"{:,.0f}".format(order.total)}} ₫</td>
+                                <td class="text-center"><span class="badge bg-success rounded-pill px-3 py-2"><i class="fa-solid fa-check"></i> Đã thanh toán</span></td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="6" class="text-center py-5 text-muted"><i class="fa-solid fa-folder-open fs-1 mb-3 opacity-25 d-block"></i> Chưa có đơn hàng nào phát sinh.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập - IT DOCKER PRO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Nunito', sans-serif; background: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed; background-size: cover; display: flex; align-items: center; height: 100vh; margin: 0; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); z-index: 1; }
+        .login-card { border-radius: 20px; border: none; box-shadow: 0 25px 50px rgba(0,0,0,0.5); overflow: hidden; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); z-index: 2; position: relative; }
+        .login-header { padding: 40px 20px 20px; text-align: center; }
+        .login-body { padding: 0 40px 40px; }
+        .role-selector { display: flex; justify-content: center; margin-bottom: 25px; }
+        .btn-group .btn { border-radius: 50px; padding: 10px 25px; font-weight: 600; }
+        .form-control { border-radius: 12px; padding: 12px 15px; background: #f8fafc; border: 1px solid #e2e8f0; }
+        .form-control:focus { box-shadow: none; border-color: #3b82f6; }
+        .btn-login { border-radius: 12px; padding: 14px; font-weight: 800; font-size: 1.1em; background: linear-gradient(to right, #3b82f6, #2563eb); border: none; transition: transform 0.3s ease; }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4); }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="container z-index-2">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5 col-xl-4">
+                <div class="card login-card">
+                    <div class="login-header border-bottom-0">
+                        <div class="mb-3 text-primary" style="font-size: 3rem;"><i class="fa-solid fa-laptop-code"></i></div>
+                        <h2 class="fw-bold mb-1 text-dark">IT-DOCKER</h2>
+                        <p class="text-secondary">Welcome back! Please login.</p>
+                    </div>
+                    <div class="login-body">
+                        {% if error %}<div class="alert alert-danger py-2 text-center rounded-3"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>{% endif %}
+                        <form method="POST">
+                            <div class="role-selector">
+                                <div class="btn-group" role="group">
+                                    <input type="radio" class="btn-check" name="role" id="roleUser" value="user" checked>
+                                    <label class="btn btn-outline-primary" for="roleUser"><i class="fa-solid fa-user"></i> Khách</label>
+                                    <input type="radio" class="btn-check" name="role" id="roleAdmin" value="admin">
+                                    <label class="btn btn-outline-primary" for="roleAdmin"><i class="fa-solid fa-shield-halved"></i> Admin</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.8rem;">Tài khoản</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-envelope text-muted"></i></span>
+                                    <input type="text" name="username" class="form-control border-start-0 ps-0" required>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.8rem;">Mật khẩu</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-lock text-muted"></i></span>
+                                    <input type="password" name="password" class="form-control border-start-0 ps-0" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-login w-100 text-white">ĐĂNG NHẬP <i class="fa-solid fa-arrow-right ms-2"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const roleUser = document.getElementById('roleUser');
+        const roleAdmin = document.getElementById('roleAdmin');
+        const userField = document.querySelector('input[name="username"]');
+        const passField = document.querySelector('input[name="password"]');
+
+        function updatePlaceholders() {
+            if (roleUser.checked) {
+                userField.placeholder = "Nhập 'user'"; passField.placeholder = "Nhập 'user123'";
+            } else {
+                userField.placeholder = "Nhập 'admin'"; passField.placeholder = "Nhập 'admin123'";
+            }
+        }
+        roleUser.addEventListener('change', updatePlaceholders);
+        roleAdmin.addEventListener('change', updatePlaceholders);
+        updatePlaceholders();
+    </script>
+</body>
+</html>
