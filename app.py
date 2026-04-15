@@ -5,12 +5,12 @@ import os # Quan trọng: Dùng để đọc biến môi trường từ Docker/C
 app = Flask(__name__)
 
 # GHI CHÚ 1: Secret Key dùng để mã hóa Session (dữ liệu người dùng).
-# Trong Docker, nếu không có cái này, tính năng đăng nhập và giỏ hàng sẽ bị lỗi.
+
 app.secret_key = 'it_docker_secret_key'
 
 # GHI CHÚ 2: Dữ liệu giả lập (Mock Data)
 # Lưu ý: Đây là biến lưu trên RAM. 
-# GV HỎI: "Dữ liệu lưu ở đâu?" -> TRẢ LỜI: "Lưu tạm trên RAM của Container".
+# "Lưu tạm trên RAM của Container".
 USERS = {
     'admin': 'admin123',
     'user': 'user123'
