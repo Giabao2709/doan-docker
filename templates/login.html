@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Giữ nguyên phong cách thiết kế hiện đại của bạn */
         body { font-family: 'Nunito', sans-serif; background: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed; background-size: cover; display: flex; align-items: center; height: 100vh; margin: 0; }
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); z-index: 1; }
         .login-card { border-radius: 20px; border: none; box-shadow: 0 25px 50px rgba(0,0,0,0.5); overflow: hidden; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); z-index: 2; position: relative; width: 100%; max-width: 400px; }
@@ -19,8 +18,7 @@
         .btn-login { border-radius: 12px; padding: 14px; font-weight: 800; font-size: 1.1em; background: linear-gradient(to right, #3b82f6, #2563eb); border: none; transition: transform 0.3s ease; }
         .btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4); }
         
-        /* Ghi chú thêm: Style cho link đăng ký */
-        .register-link { text-align: center; margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px; }
+        .register-link { text-align: center; margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px; transition: all 0.3s ease; }
         .register-link a { color: #2563eb; text-decoration: none; font-weight: 700; }
         .register-link a:hover { text-decoration: underline; }
     </style>
@@ -67,7 +65,7 @@
 
                     <button type="submit" class="btn btn-primary btn-login w-100 text-white shadow">ĐĂNG NHẬP <i class="fa-solid fa-arrow-right ms-2"></i></button>
 
-                    <div class="register-link">
+                    <div class="register-link" id="registerSection">
                         <p class="small text-muted mb-0">Bạn là khách hàng mới? <a href="/register">Đăng ký tài khoản</a></p>
                     </div>
                 </form>
@@ -80,16 +78,26 @@
         const roleAdmin = document.getElementById('roleAdmin');
         const userField = document.querySelector('input[name="username"]');
         const passField = document.querySelector('input[name="password"]');
+        const registerSection = document.getElementById('registerSection');
 
         function updatePlaceholders() {
             if (roleUser.checked) {
-                userField.placeholder = "Nhập 'user'"; passField.placeholder = "Nhập 'user123'";
+                // Khi là quyền Khách: Hiện link Đăng ký, đổi chữ in mờ
+                userField.placeholder = "Tên đăng nhập của bạn"; 
+                passField.placeholder = "Mật khẩu của bạn";
+                registerSection.style.display = "block"; 
             } else {
-                userField.placeholder = "Nhập 'admin'"; passField.placeholder = "Nhập 'admin123'";
+                // Khi là quyền Admin: Ẩn link Đăng ký, giữ chữ in mờ của Admin
+                userField.placeholder = "Nhập 'admin'"; 
+                passField.placeholder = "Nhập 'admin123'";
+                registerSection.style.display = "none";
             }
         }
+        
         roleUser.addEventListener('change', updatePlaceholders);
         roleAdmin.addEventListener('change', updatePlaceholders);
+        
+        // Chạy hàm 1 lần ngay khi tải trang để set trạng thái mặc định
         updatePlaceholders();
     </script>
 </body>
