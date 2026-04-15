@@ -86,8 +86,10 @@
                 userField.placeholder = "Nhập 'admin'"; passField.placeholder = "Nhập 'admin123'";
             }
         }
+        // Lắng nghe sự kiện thay đổi radio button
         roleUser.addEventListener('change', updatePlaceholders);
         roleAdmin.addEventListener('change', updatePlaceholders);
+        // Chạy hàm lần đầu khi trang load
         updatePlaceholders();
     </script>
 </body>
