@@ -14,5 +14,5 @@ COPY . .
 # 5. Mở cổng 5000
 EXPOSE 5000
 
-# 6. Khởi chạy ứng dụng
+# 6. Khởi chạy ứng dụng.
 CMD ["python", "app.py"]
