@@ -75,7 +75,10 @@
         const roleAdmin = document.getElementById('roleAdmin');
         const userField = document.querySelector('input[name="username"]');
         const passField = document.querySelector('input[name="password"]');
-
+        /**
+         * Hàm cập nhật Placeholder dựa trên vai trò được chọn
+         * Giúp người dùng biết nên nhập gì (gợi ý login)
+         */
         function updatePlaceholders() {
             if (roleUser.checked) {
                 userField.placeholder = "Nhập 'user'"; passField.placeholder = "Nhập 'user123'";
