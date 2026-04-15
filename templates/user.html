@@ -183,6 +183,7 @@
                 const toastEl = document.getElementById('cartToast');
                 const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
                 toast.show();
+                // GHI CHÚ: Xóa tham số trên URL để khi Refresh trang không hiện lại thông báo
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         });
