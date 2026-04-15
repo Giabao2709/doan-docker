@@ -105,9 +105,9 @@ def logout():
     session.clear() # Xóa sạch Session khi đăng xuất
     return redirect(url_for('login'))
 
-# ==========================================
+
 # CẤU HÌNH ĐỂ CHẠY TRÊN DOCKER & CLOUD
-# ==========================================
+
 if __name__ == '__main__':
     # GHI CHÚ 4: Lấy cổng PORT từ hệ thống (Render/Azure cấp phát)
     # Nếu chạy máy cá nhân (Local) thì dùng mặc định 5000
