@@ -26,9 +26,8 @@ PRODUCTS = [
 # Danh sách đơn hàng - Sẽ mất sạch nếu Container bị Restart (Tính chất Stateless của Docker)
 orders = []
 
-# ==========================================
 # PHẦN ĐIỀU HƯỚNG (ROUTES)
-# ==========================================
+
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
