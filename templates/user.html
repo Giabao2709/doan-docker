@@ -7,14 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* GHI CHÚ: Phần CSS tùy chỉnh để làm giao diện đẹp hơn (UI Modern) */
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f4f7fa; color: #1e293b; }
-        /* Hiệu ứng làm mờ thanh Menu (Glassmorphism) */
         .navbar { background: rgba(255, 255, 255, 0.95) !important; backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.03); border-bottom: 1px solid #e2e8f0; }
         .navbar-brand { font-weight: 800; color: #0f172a !important; letter-spacing: -0.5px; }
-        /* Thiết kế Banner Hero - Điểm nhấn của trang */
         .hero-banner { background: linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(30, 58, 138, 0.7)), url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop') center/cover; color: white; padding: 70px 40px; border-radius: 24px; margin-top: 30px; box-shadow: 0 20px 40px -10px rgba(30, 58, 138, 0.4); position: relative; overflow: hidden; }
-        /* Hiệu ứng di chuột (Hover) cho thẻ sản phẩm - Giúp web sinh động hơn */
         .product-card { border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; overflow: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: #ffffff; box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08); height: 100%;}
         .product-card:hover { transform: translateY(-12px); box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15); border-color: #e2e8f0; }
         .product-img-wrapper { overflow: hidden; position: relative; padding: 15px; background: #fff; }
@@ -174,7 +170,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        /* GHI CHÚ: Logic JavaScript để tự động bật thông báo Toast dựa trên tham số URL */
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
             const toastMsg = urlParams.get('toast');
@@ -183,7 +178,6 @@
                 const toastEl = document.getElementById('cartToast');
                 const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
                 toast.show();
-                // GHI CHÚ: Xóa tham số trên URL để khi Refresh trang không hiện lại thông báo
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         });
