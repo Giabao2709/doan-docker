@@ -4,9 +4,6 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = 'it_docker_secret_key'
 
-# ==========================================
-# 1. CƠ SỞ DỮ LIỆU GIẢ LẬP
-# ==========================================
 USERS = {
     'admin': 'admin123',
     'user': 'user123'
