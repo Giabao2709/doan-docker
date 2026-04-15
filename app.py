@@ -1,17 +1,24 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 from datetime import datetime
-import os # Quan trọng: Dùng để đọc biến môi trường từ Docker/Cloud
+import os 
 
 app = Flask(__name__)
 
-# GHI CHÚ 1: Secret Key dùng để mã hóa Session (dữ liệu người dùng).
-
+# GHI CHÚ 1: Secret Key dùng để mã hóa Session. 
+# Không có cái này, tính năng Đăng ký và Giỏ hàng sẽ bị lỗi trên Cloud.
 app.secret_key = 'it_docker_secret_key'
-# GHI CHÚ 2: Sử dụng List Comprehension để lọc dữ liệu.
-# Kỹ thuật này giúp code Python chạy nhanh và tối ưu bộ nhớ bên trong Container.
+
+# 1. CƠ SỞ DỮ LIỆU GIẢ LẬP (In-memory storage)
+# Chú ý: Dữ liệu này nằm trên RAM. Khi Docker Restart, tài khoản mới đăng ký sẽ mất.
 USERS = {
     'admin': 'admin123',
     'user': 'user123'
+}
+
+# Lưu trữ thêm Email cho phần Đăng ký
+USER_DETAILS = {
+    'admin': 'admin@itdocker.com',
+    'user': 'user@itdocker.com'
 }
 
 PRODUCTS = [
@@ -23,41 +30,62 @@ PRODUCTS = [
     {"id": 6, "name": "HP Spectre x360", "price": 41200000, "brand": "HP", "img": "https://images.unsplash.com/photo-1531297172867-4b550dd41334?q=80&w=400"}
 ]
 
-# Danh sách đơn hàng - Sẽ mất sạch nếu Container bị Restart (Tính chất Stateless của Docker)
+# Danh sách đơn hàng (Lưu trên RAM - Stateless)
 orders = []
 
+# ==========================================
 # PHẦN ĐIỀU HƯỚNG (ROUTES)
-
+# ==========================================
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+    # Nhận thông báo "Đăng ký thành công" từ trang Register gửi sang
+    msg = request.args.get('msg')
     if request.method == 'POST':
         role = request.form.get('role')
         username = request.form['username']
         password = request.form['password']
         
-        # Kiểm tra logic đăng nhập và khớp vai trò (Role Validation)
+        # Xác thực người dùng (Authentication)
         if username in USERS and USERS[username] == password:
-            if (role == 'admin' and username != 'admin') or (role == 'user' and username != 'user'):
-                return render_template('login.html', error="Tài khoản không khớp với vai trò!")
+            # Phân quyền (Authorization)
+            if (role == 'admin' and username != 'admin'):
+                return render_template('login.html', error="Bạn không có quyền quản trị!")
             
-            # Lưu tên người dùng vào Session (Cookie trình duyệt)
             session['username'] = username
             if username == 'admin':
                 return redirect(url_for('admin_dashboard'))
             else:
-                session['cart'] = [] # Khởi tạo giỏ hàng trống cho User
+                session['cart'] = [] 
                 return redirect(url_for('user_store'))
         return render_template('login.html', error="Sai tài khoản hoặc mật khẩu!")
-    return render_template('login.html')
+    return render_template('login.html', msg=msg)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+        
+        # GHI CHÚ 2: Kiểm tra trùng lặp tài khoản
+        if username in USERS:
+            return render_template('register.html', error="Tên đăng nhập đã tồn tại!")
+        
+        # Lưu tài khoản mới vào RAM
+        USERS[username] = password
+        USER_DETAILS[username] = email
+        
+        # Sau khi đăng ký xong, quay về trang login kèm thông báo
+        return redirect(url_for('login', msg="Đăng ký thành công! Mời bạn đăng nhập."))
+    return render_template('register.html')
 
 @app.route('/store')
 def user_store():
-    # Bảo mật: Nếu chưa đăng nhập mà đòi vào Store -> Đuổi ra trang Login
     if 'username' not in session or session['username'] == 'admin':
         return redirect(url_for('login'))
     
-    # Lấy danh sách sản phẩm thực tế từ ID trong giỏ hàng
+    # GHI CHÚ 3: Sử dụng List Comprehension để lọc giỏ hàng nhanh hơn
     cart_items = [p for p in PRODUCTS if p['id'] in session.get('cart', [])]
     total_price = sum(item['price'] for item in cart_items)
     return render_template('user.html', products=PRODUCTS, cart=cart_items, total=total_price)
@@ -66,18 +94,13 @@ def user_store():
 def add_cart(product_id):
     if 'cart' not in session: session['cart'] = []
     session['cart'].append(product_id)
-    
-    # GHI CHÚ 3: Thông báo cho Flask biết Session đã thay đổi để cập nhật Cookie
-    session.modified = True
-    
-    product_name = next((p['name'] for p in PRODUCTS if p['id'] == product_id), "Sản phẩm")
-    return redirect(url_for('user_store', toast=product_name))
+    session.modified = True # Cập nhật lại session cookie
+    return redirect(url_for('user_store', toast="Đã thêm vào giỏ!"))
 
 @app.route('/checkout', methods=['POST'])
 def checkout():
     cart_items = [p for p in PRODUCTS if p['id'] in session.get('cart', [])]
     if cart_items:
-        # Tạo đối tượng đơn hàng mới
         new_order = {
             'customer': request.form['customer_name'],
             'phone': request.form['phone'],
@@ -85,34 +108,28 @@ def checkout():
             'total': sum(item['price'] for item in cart_items),
             'time': datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         }
-        orders.append(new_order) # Lưu vào danh sách orders trên RAM
-        session['cart'] = [] # Xóa sạch giỏ hàng sau khi đặt thành công
+        orders.append(new_order) # Ghi đơn hàng vào RAM
+        session['cart'] = [] 
     return redirect(url_for('user_store', msg="Đặt hàng thành công!"))
 
 @app.route('/admin')
 def admin_dashboard():
-    # Chỉ Admin mới được vào trang quản trị
     if session.get('username') != 'admin': return redirect(url_for('login'))
-    
     total_rev = sum(order['total'] for order in orders)
-    total_items = sum(len(order['items']) for order in orders)
-    
-    # Đảo ngược danh sách đơn hàng để đơn mới nhất hiện lên đầu
-    return render_template('admin.html', orders=orders[::-1], total_rev=total_rev, total_items=total_items)
+    # GHI CHÚ 4: Đảo ngược danh sách để đơn hàng mới nhất hiện lên đầu
+    return render_template('admin.html', orders=orders[::-1], total_rev=total_rev)
 
 @app.route('/logout')
 def logout():
-    session.clear() # Xóa sạch Session khi đăng xuất
+    session.clear() 
     return redirect(url_for('login'))
 
-
-# CẤU HÌNH ĐỂ CHẠY TRÊN DOCKER & CLOUD
+# ==========================================
+# CẤU HÌNH DOCKER & CLOUD
+# ==========================================
 
 if __name__ == '__main__':
-    # GHI CHÚ 4: Lấy cổng PORT từ hệ thống (Render/Azure cấp phát)
-    # Nếu chạy máy cá nhân (Local) thì dùng mặc định 5000
+    # GHI CHÚ 5: Dynamic Port Binding - Tự động nhận diện cổng của Render
     port = int(os.environ.get('PORT', 5000))
-    
-    # GHI CHÚ 5: Host '0.0.0.0' là BẮT BUỘC để Docker Container có thể 
-    # giao tiếp được với mạng bên ngoài máy chủ.
+    # Host 0.0.0.0 để Docker Container có thể "nói chuyện" với internet
     app.run(host='0.0.0.0', port=port)
