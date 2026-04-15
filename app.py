@@ -7,10 +7,8 @@ app = Flask(__name__)
 # GHI CHÚ 1: Secret Key dùng để mã hóa Session (dữ liệu người dùng).
 
 app.secret_key = 'it_docker_secret_key'
-
-# GHI CHÚ 2: Dữ liệu giả lập (Mock Data)
-# Lưu ý: Đây là biến lưu trên RAM. 
-# "Lưu tạm trên RAM của Container".
+# GHI CHÚ 2: Sử dụng List Comprehension để lọc dữ liệu.
+# Kỹ thuật này giúp code Python chạy nhanh và tối ưu bộ nhớ bên trong Container.
 USERS = {
     'admin': 'admin123',
     'user': 'user123'
